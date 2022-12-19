@@ -7,5 +7,5 @@ Daniil Kirilenko, Anton Andreychuk, Aleksandr Panov, Konstantin Yakovlev, "Trans
 ## Pretrained models
 Directory `./weights` contains parameters for some of the pre-trained models from the paper.
 
-## Examples os work
+## Examples
 Check `example.ipynb` for some examples of predictions and search results of our models. There are a few examples of train and out-of-distribution maps in the directory `./maps`.
