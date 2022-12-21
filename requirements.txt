@@ -1,0 +1,6 @@
+numpy
+torch==1.11.0
+torchvision
+pytorch_lightning==1.6.0
+einops
+matplotlib
