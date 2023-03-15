@@ -98,3 +98,36 @@ class OODMaps(Dataset):
         h = torch.FloatTensor(proc_grid(root[1][2])).reshape(1, self.grid_size, self.grid_size)
         
         return map_designs, start_maps, goal_maps, hm, koef, h
+
+    
+class GridData(Dataset):
+    """
+    'mode' argument defines type of ground truth values:
+        f - focal values
+        h - absolute ideal heuristic values
+        cf - correction factor values
+    """
+    def __init__(self, path, mode='f', clip_value=0.95):
+        maps = np.load(os.path.join(path, 'maps.npy')).astype('float32')
+        self.maps = torch.tensor(maps)
+        goals = np.load(os.path.join(path, 'goals.npy')).astype('float32')
+        self.goals = torch.tensor(goals)
+        starts = np.load(os.path.join(path, 'starts.npy')).astype('float32')
+        self.starts = torch.tensor(starts)
+        
+        if mode == 'f':
+            gt_values = np.load(os.path.join(path, 'focal.npy')).astype('float32')
+            gt_values = torch.tensor(gt_values)
+            self.gt_values = torch.where(gt_values >= clip_value, gt_values, torch.zeros_like(gt_values))
+        elif mode == 'h':
+            gt_values = np.load(os.path.join(path, 'abs.npy')).astype('float32')
+            self.gt_values = torch.tensor(gt_values)
+        elif mode == 'cf':
+            gt_values = np.load(os.path.join(path, 'cf.npy')).astype('float32')
+            self.gt_values = torch.tensor(gt_values)
+    
+    def __len__(self):
+        return len(self.gt_values)
+    
+    def __getitem__(self, idx):
+        return self.maps[idx], self.starts[idx], self.goals[idx], self.gt_values[idx]
