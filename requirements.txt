@@ -1,6 +1,8 @@
 numpy
-torch==1.11.0
+torch
 torchvision
-pytorch_lightning==1.6.0
+pytorch_lightning
 einops
 matplotlib
+wandb
+tqdm
