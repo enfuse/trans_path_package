@@ -64,6 +64,7 @@ class Autoencoder(pl.LightningModule):
         
         self.recon_criterion = nn.L1Loss() if mode == 'h' else nn.MSELoss()
         self.mode = mode
+        self.k = 64*64 if mode == 'h' else 1
         
         self.automatic_optimization = False
         self.save_hyperparameters()
@@ -77,19 +78,11 @@ class Autoencoder(pl.LightningModule):
         return x
 
     def step(self, batch, batch_idx, regime):
-        map_design, start, goal, hm, koefs, h = batch
+        map_design, start, goal, gt_hmap = batch
         inputs = torch.cat([map_design, start + goal], dim=1) if self.mode in ('f', 'nastar') else torch.cat([map_design, goal], dim=1)
         predictions = self(inputs)
-        if self.mode == 'f':
-            gt_hmap = hm
-            k = 1
-        elif self.mode == 'h':
-            gt_hmap = h
-            k = 64*64
-        else:
-            gt_hmap = koefs
-            k = 1
-        loss = self.recon_criterion((predictions + 1) / 2 * k, gt_hmap)
+
+        loss = self.recon_criterion((predictions + 1) / 2 * self.k, gt_hmap)
         self.log(f'{regime}_recon_loss', loss, on_step=False, on_epoch=True)
         return loss
     
@@ -123,15 +116,15 @@ class Autoencoder(pl.LightningModule):
 class PathLogger(pl.Callback):
     def __init__(self, val_batch, num_samples=20, mode='f'):
         super().__init__()
-        map_design, start, goal, hm, koefs, h = val_batch[:num_samples]
+        map_design, start, goal, gt_hmap = val_batch[:num_samples]
         inputs = torch.cat([map_design, start + goal], dim=1) if mode == 'f' else torch.cat([map_design, goal], dim=1)
         self.val_samples = inputs[:num_samples]
         if mode == 'f':
-            self.hm = hm[:num_samples]
+            self.hm = gt_hmap[:num_samples]
         elif mode == 'h':
-            self.hm =  (h / h.amax(dim=(2, 3), keepdim=True))[:num_samples]
+            self.hm =  (gt_hmap / gt_hmap.amax(dim=(2, 3), keepdim=True))[:num_samples]
         else:
-            self.hm = koefs[:num_samples]
+            self.hm = gt_hmap[:num_samples]
             
 
     def on_validation_epoch_end(self, trainer, pl_module):
