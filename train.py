@@ -18,9 +18,10 @@ def main(mode, run_name, proj_name):
         path='./TransPath_data/val',
         mode=mode
     )
-    train_dataloader = DataLoader(train_data, batch_size=256,
+    print('loading finished')
+    train_dataloader = DataLoader(train_data, batch_size=64,
                         shuffle=True, num_workers=0, pin_memory=True)
-    val_dataloader = DataLoader(val_data, batch_size=256,
+    val_dataloader = DataLoader(val_data, batch_size=64,
                         shuffle=False, num_workers=0, pin_memory=True)
     samples = next(iter(val_dataloader))
     
@@ -28,7 +29,7 @@ def main(mode, run_name, proj_name):
     wandb_logger = WandbLogger(project=proj_name, name=run_name)
     trainer = pl.Trainer(
         logger=wandb_logger,
-        gpus=-1,
+        accelerator="auto",
         max_epochs=50,
         deterministic=False,
         callbacks=[PathLogger(samples, mode=mode)],
