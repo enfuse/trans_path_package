@@ -110,30 +110,25 @@ class GridData(Dataset):
     def __init__(self, path, mode='f', clip_value=0.95):
         self.clip_v = clip_value
         self.mode = mode
-        maps = np.load(os.path.join(path, 'maps.npy'), mmap_mode='c')
-        self.maps = maps
-        goals = np.load(os.path.join(path, 'goals.npy'), mmap_mode='c')
-        self.goals = goals
-        starts = np.load(os.path.join(path, 'starts.npy'), mmap_mode='c')
-        self.starts = starts
+
+        self.maps   = np.load(os.path.join(path,    'maps.npy'),    mmap_mode='c')
+        self.goals  = np.load(os.path.join(path,    'goals.npy'),   mmap_mode='c')
+        self.starts = np.load(os.path.join(path,    'starts.npy'),  mmap_mode='c')
         
-        if mode == 'f':
-            gt_values = np.load(os.path.join(path, 'focal.npy'), mmap_mode='c')
-            gt_values = gt_values
-            self.gt_values = gt_values
-            # self.gt_values = torch.where(gt_values >= clip_value, gt_values, torch.zeros_like(gt_values))
-        elif mode == 'h':
-            gt_values = np.load(os.path.join(path, 'abs.npy'), mmap_mode='c')
-            self.gt_values = gt_values
-        elif mode == 'cf':
-            gt_values = np.load(os.path.join(path, 'cf.npy'), mmap_mode='c')
-            self.gt_values = gt_values
-    
+        file_gt = {'f' : 'focal.npy', 'h':'abs.npy', 'cf': 'cf.npy'}[mode]
+        self.gt_values = np.load(os.path.join(path, file_gt), mmap_mode='c')
+
+
     def __len__(self):
         return len(self.gt_values)
+    
+    
     
     def __getitem__(self, idx):
         gt_ = torch.from_numpy(self.gt_values[idx].astype('float32'))
         if self.mode == 'f':
             gt_=  torch.where( gt_ >= self.clip_v, gt_ , torch.zeros_like( torch.from_numpy(self.gt_values[idx])))
-        return torch.from_numpy(self.maps[idx].astype('float32')), torch.from_numpy(self.starts[idx].astype('float32')), torch.from_numpy(self.goals[idx].astype('float32')), gt_
+        return (torch.from_numpy(self.maps[idx].astype('float32')), 
+                torch.from_numpy(self.starts[idx].astype('float32')), 
+                torch.from_numpy(self.goals[idx].astype('float32')), 
+                gt_ )
