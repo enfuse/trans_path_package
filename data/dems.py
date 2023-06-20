@@ -3,10 +3,10 @@ import numpy as np
 import torch
 
 def sg2img(start, goal, img_size=128):
-    img = np.zeros((2, 128, 128))
+    img = torch.zeros((2, 128, 128))
     img[0, start[0], start[1]] = 1
     img[1, goal[0], goal[1]] = 1
-    return img
+    return img.float()
 
 
 class DemData(Dataset):
