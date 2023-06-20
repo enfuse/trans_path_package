@@ -54,7 +54,7 @@ if __name__ == '__main__':
     parser.add_argument('--proj_name', type=str, default='TransPath_runs')
     parser.add_argument('--seed', type=int, default=39)
     parser.add_argument('--batch', type=int, default=256)
-    parser.add_argument('--epoch', type=int, default=15)
+    parser.add_argument('--epoch', type=int, default=160)
     
     args = parser.parse_args()
     pl.seed_everything(args.seed)
