@@ -118,7 +118,7 @@ class DemAutoencoder(Autoencoder):
                 in_channels=5, 
                 out_channels=2, 
                 hidden_channels=64,
-                attn_blocks=4,
+                attn_blocks=6,
                 attn_heads=4,
                 cnn_dropout=0.15,
                 attn_dropout=0.15,
