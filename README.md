@@ -1,7 +1,7 @@
 # TransPath: Learning Heuristics For Grid-Based Pathfinding via Transformers
-[This](https://github.com/AIRI-Institute/TransPath) is the code repository for the following paper accepted at AAAI 2023: 
+[This](https://github.com/AIRI-Institute/TransPath) is the code repository for the following paper published at AAAI 2023: 
 
-Daniil Kirilenko, Anton Andreychuk, Aleksandr Panov, Konstantin Yakovlev, "TransPath: Learning Heuristics For Grid-Based Pathfinding via Transformers", AAAI, 2023.
+Daniil Kirilenko, Anton Andreychuk, Aleksandr Panov, Konstantin Yakovlev, TransPath: Learning Heuristics for Grid-Based Pathfinding via Transformers. Proceedings of the AAAI Conference on Artificial Intelligence. 37, 10 (Jun. 2023), 12436-12443. DOI: [https://doi.org/10.1609/aaai.v37i10.26465](https://github.com/AIRI-Institute/TransPath).
 
 ![Visual abstract](images/visual_abstract.png)
 
