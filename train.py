@@ -21,6 +21,7 @@ def main(mode, run_name, proj_name, batch_size, max_epochs):
         path='./TransPath_data/val',
         mode=mode
     ) if mode != 'dem' else DemData(split='val')
+    resolution = (train_data.img_size, train_data.img_size)
     train_dataloader = DataLoader(  train_data, 
                                     batch_size=batch_size,
                                     shuffle=True, 
@@ -34,9 +35,9 @@ def main(mode, run_name, proj_name, batch_size, max_epochs):
     
     samples = next(iter(val_dataloader))
     
-    model = Autoencoder(mode=mode) if mode != 'dem' else DemAutoencoder()
+    model = Autoencoder(mode=mode, resolution=resolution) if mode != 'dem' else DemAutoencoder(resolution=resolution)
     callback = PathLogger(samples, mode=mode) if mode != 'dem' else DemPathLogger(samples)
-    wandb_logger = WandbLogger(project=proj_name, name=f'{run_name}_{mode}')
+    wandb_logger = WandbLogger(project=proj_name, name=f'{run_name}_{mode}', log_model='all')
     trainer = pl.Trainer(
         logger=wandb_logger,
         accelerator="auto",
@@ -64,5 +65,5 @@ if __name__ == '__main__':
         run_name=args.run_name,
         proj_name=args.proj_name,
         batch_size=args.batch,
-        max_epochs=args.epoch
+        max_epochs=args.epoch,
     )
