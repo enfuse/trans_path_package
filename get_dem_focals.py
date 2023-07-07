@@ -16,7 +16,7 @@ def get_focal_values(dem):
     results = []
     starts = []
     goals = []
-    dem = dem[0].astype(np.int64)
+    dem = dem[0]
     planner = grid_planner(dem.tolist())
     tasks = generate_tasks(10, dem.shape[0])
     for task in tasks:
@@ -35,6 +35,8 @@ def proc_file(filename):
         focals.append(focal)
         starts.append(start)
         goals.append(goal)
+        if len(focals) > 1000:
+            break
     np.savez(new_filename, focal=np.stack(focals), start=np.stack(starts), goal=np.stack(goals))
 
 
