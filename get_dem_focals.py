@@ -35,8 +35,6 @@ def proc_file(filename):
         focals.append(focal)
         starts.append(start)
         goals.append(goal)
-        if len(focals) > 1000:
-            break
     np.savez(new_filename, focal=np.stack(focals), start=np.stack(starts), goal=np.stack(goals))
 
 
