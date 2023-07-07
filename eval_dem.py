@@ -82,7 +82,7 @@ def get_metrics(name='test', ckpt_path='./model.ckpt'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ckpt_path', type=str, default='./weights/model_64.ckpt')
+    parser.add_argument('--ckpt_path', type=str, default='./weights/dem_64.ckpt')
 
     args = parser.parse_args()
     get_metrics(ckpt_path=args.ckpt_path, name='./test')
