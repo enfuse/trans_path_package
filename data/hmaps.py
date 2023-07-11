@@ -14,6 +14,7 @@ def proc_grid(grid):
 
 class PathData(Dataset):
     def __init__(self, xml_path, koef_path, h_path, grid_size=64, limit_k=1, clip_value=0.):
+        self.img_size = grid_size
         self.xml_path = xml_path
         self.koef_path = koef_path
         self.h_path = h_path
@@ -60,6 +61,7 @@ class PathData(Dataset):
     
 class OODMaps(Dataset):
     def __init__(self, xml_path, grid_size=64, clip_value=0.):
+        self.img_size = grid_size
         self.xml_path = xml_path
         self.file_names = os.listdir(self.xml_path)
         self.size = len(self.file_names) // 3
@@ -107,7 +109,8 @@ class GridData(Dataset):
         h - absolute ideal heuristic values
         cf - correction factor values
     """
-    def __init__(self, path, mode='f', clip_value=0.95):
+    def __init__(self, path, mode='f', clip_value=0.95, img_size=64):
+        self.img_size = img_size
         self.clip_v = clip_value
         self.mode = mode
 
