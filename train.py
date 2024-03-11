@@ -11,15 +11,20 @@ import torch
 import argparse
 import multiprocessing
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 def main(mode, run_name, proj_name, batch_size, max_epochs):
     train_data = GridData(
         path='./TransPath_data/train',
-        mode=mode
+        mode=mode,
+        img_size=512
     ) if mode != 'dem' else DemData(split='train')
     val_data = GridData(
         path='./TransPath_data/val',
-        mode=mode
+        mode=mode,
+        img_size=512
     ) if mode != 'dem' else DemData(split='val')
     resolution = (train_data.img_size, train_data.img_size)
     train_dataloader = DataLoader(  train_data, 
@@ -37,6 +42,11 @@ def main(mode, run_name, proj_name, batch_size, max_epochs):
     
     model = Autoencoder(mode=mode, resolution=resolution) if mode != 'dem' else DemAutoencoder(resolution=resolution)
     callback = PathLogger(samples, mode=mode) if mode != 'dem' else DemPathLogger(samples)
+
+    # Get the W&B API key from the environment variable
+    wandb_api_key = os.getenv("WANDB_API_KEY")
+    wandb.login(key=wandb_api_key)
+
     wandb_logger = WandbLogger(project=proj_name, name=f'{run_name}_{mode}', log_model='all')
     trainer = pl.Trainer(
         logger=wandb_logger,
@@ -50,11 +60,11 @@ def main(mode, run_name, proj_name, batch_size, max_epochs):
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--mode', type=str, choices=['f', 'cf', 'dem'], default='dem')
+    parser.add_argument('--mode', type=str, choices=['f', 'cf', 'dem'], default='f')
     parser.add_argument('--run_name', type=str, default='default')
     parser.add_argument('--proj_name', type=str, default='TransPath_runs')
     parser.add_argument('--seed', type=int, default=39)
-    parser.add_argument('--batch', type=int, default=256)
+    parser.add_argument('--batch', type=int, default=8)
     parser.add_argument('--epoch', type=int, default=160)
     
     args = parser.parse_args()
