@@ -1,7 +1,7 @@
 import argparse
 import matplotlib.pyplot as plt
 import inference
-import bw_map_data_generator
+import utils.bw_map_data_generator as bw_map_data_generator
 
 # input params
 def parse_args():

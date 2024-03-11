@@ -54,8 +54,8 @@ def infer_path():
     goal_filepath = './map_data/goal_map.png'
     #goal_filepath = './map_data/goal.png'
 
-    model_cf = Autoencoder(mode='k', resolution=(1080, 720))
-    model_focal = Autoencoder(mode='f', resolution=(1080, 720))
+    model_cf = Autoencoder(mode='k', resolution=(64, 64))
+    model_focal = Autoencoder(mode='f', resolution=(64, 64))
 
     model_cf.load_state_dict(torch.load(cf_weight_path))
     model_cf.eval()
