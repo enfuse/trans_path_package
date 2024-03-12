@@ -131,6 +131,9 @@ dmypy.json
 .pyre/
 
 # Misc.
+.vscode
+.vscode/*
+.vscode/launch.json
 *.vscode*
 *.vscode/*
 TransPath_data
