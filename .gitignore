@@ -3,6 +3,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*__pycache__*
 
 # C extensions
 *.so
@@ -129,6 +130,13 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-
+# Misc.
+.vscode
+.vscode/*
+.vscode/launch.json
+*.vscode*
+*.vscode/*
 TransPath_data
 wandb
+map_data
+map_data/*
