@@ -1,5 +1,4 @@
 import argparse
-
 import cv2
 import matplotlib.pyplot as plt
 import pytorch_lightning as pl
@@ -8,6 +7,12 @@ import os
 
 from models.autoencoder import Autoencoder
 from modules.planners import DifferentiableDiagAstar
+
+# Set environment variable
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+# Get the directory path of the current script
+CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 pl.seed_everything(42)
 
@@ -44,15 +49,15 @@ def transform_plan(image):
 
 
 def infer_path():
-    os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-    cf_weight_path ='./weights/cf.pth'
-    focal_weight_path='./weights/focal.pth'
-    map_filepath = './map_data/rescaled_map.png'
-    #map_filepath = './map_data/map.png'
-    start_filepath = './map_data/start_map.png'
-    #start_filepath = './map_data/start.png'
-    goal_filepath = './map_data/goal_map.png'
-    #goal_filepath = './map_data/goal.png'
+    # Define paths
+    cf_weight_path = os.path.join(CURRENT_DIR, 'weights', 'cf.pth')
+    focal_weight_path = os.path.join(CURRENT_DIR, 'weights', 'focal.pth')
+    map_filepath = os.path.join(CURRENT_DIR, '..', 'map_data', 'rescaled_map.png')
+    # map_filepath = os.path.join(CURRENT_DIR, '..', 'map_data', 'map.png')
+    start_filepath = os.path.join(CURRENT_DIR, '..', 'map_data', 'start_map.png')
+    # start_filepath = os.path.join(CURRENT_DIR, '..', 'map_data', 'start.png')
+    goal_filepath = os.path.join(CURRENT_DIR, '..', 'map_data', 'goal_map.png')
+    # goal_filepath = os.path.join(CURRENT_DIR, '..', 'map_data', 'goal.png')
 
     model_cf = Autoencoder(mode='k', resolution=(64, 64))
     model_focal = Autoencoder(mode='f', resolution=(64, 64))
