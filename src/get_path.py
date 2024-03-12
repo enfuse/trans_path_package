@@ -1,6 +1,6 @@
 import argparse
-import inference as inference
-import utils.bw_map_data_generator as bw_map_data_generator
+import src.utils.inference as inf
+import utils.bw_map_data_generator as map_gen
 
 # input params
 def parse_args():
@@ -19,29 +19,27 @@ def parse_args():
 def main(args):
     start_filename = 'start_map'
     goal_filename = 'goal_map'
-    # create resized map
-    bw_map_data_generator.resize_and_pad(
+    map_gen.resize_and_pad(
         image_path = args.image_path, 
         target_size_x = args.target_size_x, 
         target_size_y = args.target_size_y
     )
-    # create start and goal images
-    bw_map_data_generator.create_start_or_goal_image(
+    map_gen.create_start_or_goal_image(
         x_point = args.start_point_x, 
         y_point = args.start_point_y, 
         filename = start_filename, 
         target_size_x = args.target_size_x, 
         target_size_y = args.target_size_y
     )
-    bw_map_data_generator.create_start_or_goal_image(
+    map_gen.create_start_or_goal_image(
         x_point = args.goal_point_x, 
         y_point = args.goal_point_y, 
         filename = goal_filename, 
         target_size_x = args.target_size_x, 
         target_size_y = args.target_size_y
     )
-    # infer path (wayfinding)
-    inference.infer_path()
+    inf.infer_path()
+    # TODO: simple plotting for Afton? output images?
 
 if __name__ == "__main__":
     args = parse_args()

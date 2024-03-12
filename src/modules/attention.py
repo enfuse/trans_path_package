@@ -4,8 +4,10 @@ import torch
 from torch import nn, einsum
 from torch.nn import functional as F
 from einops import rearrange, repeat
+import sys
+sys.path.append('../..')
 
-from utils.checkpoint import checkpoint
+from src.utils.checkpoint import checkpoint
 
 
 def default(val, d):
