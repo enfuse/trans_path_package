@@ -1,6 +1,11 @@
 import argparse
-import src.utils.inference as inf
-import utils.bw_map_data_generator as map_gen
+import numpy as np
+import os
+from PIL import Image
+import sys
+sys.path.append('../..')
+from src.utils import bw_map_data_generator as map_gen
+from src.utils import inference as inf
 
 # input params
 def parse_args():
@@ -38,8 +43,32 @@ def main(args):
         target_size_x = args.target_size_x, 
         target_size_y = args.target_size_y
     )
-    inf.infer_path()
-    # TODO: simple plotting for Afton? output images?
+    results = inf.infer_path()
+
+    # Load map image
+    map_image = Image.open("./../../map_data/rescaled_map.png")
+    map_arr = np.array(map_image)
+
+    # Overlay path onto the map_arr
+    path = results['outputs_vanilla'].paths.squeeze().cpu().numpy()
+    path = np.where(path > 0, 255, 0).astype(np.uint8)
+    map_arr[:, :, 0] = np.where(path > 0, 255, map_arr[:, :, 0])  # Red channel
+    map_arr[:, :, 1] = np.where(path > 0, 0, map_arr[:, :, 1])    # Green channel
+    map_arr[:, :, 2] = np.where(path > 0, 0, map_arr[:, :, 2])    # Blue channel
+
+    # Overlay start point
+    start = np.zeros_like(path)
+    start[args.start_point_y, args.start_point_x] = 255
+    map_arr[:, :, 1] = np.where(start > 0, 255, map_arr[:, :, 1])  # Green channel
+
+    # Overlay goal point
+    goal = np.zeros_like(path)
+    goal[args.goal_point_y, args.goal_point_x] = 255
+    map_arr[:, :, 2] = np.where(goal > 0, 255, map_arr[:, :, 2])    # Blue channel
+
+    # Save the result image
+    result_image = Image.fromarray(map_arr)
+    result_image.save("result_image.png")
 
 if __name__ == "__main__":
     args = parse_args()
