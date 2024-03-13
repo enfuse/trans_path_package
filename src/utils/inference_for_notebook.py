@@ -5,10 +5,12 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 import pytorch_lightning as pl
 pl.seed_everything(42)
+import sys
+sys.path.append('../..')
 import torch
 
-from models.autoencoder import Autoencoder
-from modules.planners import DifferentiableDiagAstar
+from src.models.autoencoder_for_notebook import Autoencoder
+from src.modules.planners import DifferentiableDiagAstar
 
 def load_image_tensor(file_path):
     image = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)

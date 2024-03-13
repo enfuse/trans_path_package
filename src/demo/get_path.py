@@ -3,9 +3,13 @@ import numpy as np
 import os
 from PIL import Image
 import sys
-sys.path.append('../..')
-from src.utils import bw_map_data_generator as map_gen
-from src.utils import inference as inf
+src_demo_path = sys.path[0]
+src_path = src_demo_path[:-5]
+project_path = src_path[:-3]
+sys.path.insert(0, src_path)
+sys.path.insert(0, project_path)
+from utils import bw_map_data_generator as map_gen
+from utils import inference as inf
 
 # input params
 def parse_args():
@@ -46,7 +50,7 @@ def main(args):
     results = inf.infer_path()
 
     # Load map image
-    map_image = Image.open("./../../map_data/rescaled_map.png")
+    map_image = Image.open("./map_data/rescaled_map.png")
     map_arr = np.array(map_image)
 
     # Overlay path onto the map_arr
