@@ -21,3 +21,5 @@ Use `eval.py` and `eval_dem.py` to evaluate a model on the test set.
 
 ## Examples
 Check `example.ipynb` for some examples of predictions and search results of our models. There are a few examples of train and out-of-distribution maps in the directory `./maps`.
+
+`python3 src/demo/get_path.py --image_path 0311_map.png --target_size_x 64 --target_size_y 64 --start_point_x 20 --start_point_y 15 --goal_point_x 40 --goal_point_y 30`
