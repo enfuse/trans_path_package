@@ -1,4 +1,5 @@
 import argparse
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 from PIL import Image
@@ -8,6 +9,7 @@ src_path = src_demo_path[:-5]
 project_path = src_path[:-3]
 sys.path.insert(0, src_path)
 sys.path.insert(0, project_path)
+import torch
 from utils import bw_map_data_generator as map_gen
 from utils import inference as inf
 
@@ -49,30 +51,52 @@ def main(args):
     )
     results = inf.infer_path()
 
-    # Load map image
-    map_image = Image.open("./map_data/rescaled_map.png")
-    map_arr = np.array(map_image)
+    fig, ax = plt.subplots(1, 6, figsize=(15, 7))
 
-    # Overlay path onto the map_arr
-    path = results['outputs_vanilla'].paths.squeeze().cpu().numpy()
-    path = np.where(path > 0, 255, 0).astype(np.uint8)
-    map_arr[:, :, 0] = np.where(path > 0, 255, map_arr[:, :, 0])  # Red channel
-    map_arr[:, :, 1] = np.where(path > 0, 0, map_arr[:, :, 1])    # Green channel
-    map_arr[:, :, 2] = np.where(path > 0, 0, map_arr[:, :, 2])    # Blue channel
+    ax[0].imshow(
+        inf.transform_plan(torch.moveaxis(torch.cat(
+            [results['map_design'], results['outputs_vanilla'].paths, results['outputs_vanilla'].histories - results['outputs_vanilla'].paths], dim=1)[0], 0, 2)
+                        ))
+    ax[0].set_xticks([])
+    ax[0].set_yticks([])
+    ax[0].set_title(f'A* search')
 
-    # Overlay start point
-    start = np.zeros_like(path)
-    start[args.start_point_y, args.start_point_x] = 255
-    map_arr[:, :, 1] = np.where(start > 0, 255, map_arr[:, :, 1])  # Green channel
+    ax[1].imshow(
+        inf.transform_plan(torch.moveaxis(torch.cat(
+            [results['map_design'], results['outputs_w2'].paths, results['outputs_w2'].histories - results['outputs_w2'].paths], dim=1)[0], 0, 2)
+                        ))
+    ax[1].set_xticks([])
+    ax[1].set_yticks([])
+    ax[1].set_title(f'WA* search')
 
-    # Overlay goal point
-    goal = np.zeros_like(path)
-    goal[args.goal_point_y, args.goal_point_x] = 255
-    map_arr[:, :, 2] = np.where(goal > 0, 255, map_arr[:, :, 2])    # Blue channel
+    ax[2].imshow(
+        inf.transform_plan(torch.moveaxis(torch.cat(
+            [results['map_design'], results['outputs_fw100'].paths, results['outputs_fw100'].histories - results['outputs_fw100'].paths], dim=1)[0], 0, 2)
+                        ))
+    ax[2].set_xticks([])
+    ax[2].set_yticks([])
+    ax[2].set_title(f'Focal search + PPM')
 
-    # Save the result image
-    result_image = Image.fromarray(map_arr)
-    result_image.save("result_image.png")
+    ax[3].imshow(
+        inf.transform_plan(torch.moveaxis(torch.cat(
+            [results['map_design'], results['outputs_cf'].paths, results['outputs_cf'].histories - results['outputs_cf'].paths], dim=1)[0], 0, 2)
+                        ))
+    ax[3].set_xticks([])
+    ax[3].set_yticks([])
+    ax[3].set_title(f'WA* search + CF')
+
+    ax[4].imshow(results['pred_f'][0, 0], cmap='gray')
+    ax[4].set_xticks([])
+    ax[4].set_yticks([])
+    ax[4].set_title(f'predicted path')
+
+    ax[5].imshow(results['pred_cf'][0, 0])
+    ax[5].set_xticks([])
+    ax[5].set_yticks([])
+    ax[5].set_title(f'predicted CF')
+
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
     args = parse_args()
