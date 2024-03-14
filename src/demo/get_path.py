@@ -14,9 +14,9 @@ import torch
 from utils import bw_map_data_generator as map_gen
 from utils import inference as inf
 
-def generate_map_with_path(results, file_path):
+def generate_map_with_path(results, file_name):
     data_cf =  torch.cat(
-        [results['map_design'], results['outputs_cf'].paths, results['outputs_cf'].histories - results['outputs_cf'].paths], dim=1
+        [results['map_design'], results['outputs'].paths, results['outputs'].histories - results['outputs'].paths], dim=1
     )
     np_data_cf = data_cf.numpy()
     image_data = np_data_cf.transpose(0, 2, 3, 1)
@@ -24,7 +24,7 @@ def generate_map_with_path(results, file_path):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     map_data_dir = os.path.join(script_dir, '..', '..', 'map_data')
     os.makedirs(map_data_dir, exist_ok=True)
-    output_image_path = os.path.join(map_data_dir, 'output.png')
+    output_image_path = os.path.join(map_data_dir, file_name)
     cv2.imwrite(output_image_path, scaled_image_data[0])
 
 # input params
@@ -63,8 +63,8 @@ def main(args):
         target_size_x = args.target_size_x, 
         target_size_y = args.target_size_y
     )
-    results = inf.infer_path()
-    generate_map_with_path(results = results, file_path = 'wa_star_cf_image.png')
+    results = inf.infer_path('cf')
+    generate_map_with_path(results = results, file_name = 'wa_star_cf_image.png')
     
 
 if __name__ == "__main__":
