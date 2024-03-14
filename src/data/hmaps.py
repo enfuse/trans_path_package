@@ -4,6 +4,7 @@ import numpy as np
 import xml.etree.ElementTree as ET
 from torch.utils.data import Dataset
 
+from scipy.ndimage import zoom
 
 def proc_grid(grid):
     rows = []
@@ -125,13 +126,39 @@ class GridData(Dataset):
     def __len__(self):
         return len(self.gt_values)
     
-    
+
     
     def __getitem__(self, idx):
         gt_ = torch.from_numpy(self.gt_values[idx].astype('float32'))
+        maps_ = torch.from_numpy(self.maps[idx].astype('float32'))
+        starts_ = torch.from_numpy(self.starts[idx].astype('float32'))
+        goals_ = torch.from_numpy(self.goals[idx].astype('float32'))
+
+        gt_ = self.resize(gt_)
+        maps_ = self.resize(maps_)
+        starts_ = self.resize(starts_)
+        goals_ = self.resize(goals_)
+
         if self.mode == 'f':
-            gt_=  torch.where( gt_ >= self.clip_v, gt_ , torch.zeros_like( torch.from_numpy(self.gt_values[idx])))
-        return (torch.from_numpy(self.maps[idx].astype('float32')), 
-                torch.from_numpy(self.starts[idx].astype('float32')), 
-                torch.from_numpy(self.goals[idx].astype('float32')), 
-                gt_ )
+            gt_ = torch.where( gt_ >= self.clip_v, gt_, torch.zeros((self.img_size, self.img_size)))
+            # gt_=  torch.where( gt_ >= self.clip_v, gt_, torch.zeros_like( torch.from_numpy(self.gt_values[idx])))
+
+        return maps_, starts_, goals_, gt_
+
+
+    def resize(self, input):
+        input = np.squeeze(input, axis=0)
+
+        # Define the zoom factor for each axis
+        zoom_factor = (self.img_size / input.shape[0], self.img_size / input.shape[1])
+
+        # Use the zoom function to increase resolution
+        input = zoom(input, zoom_factor, order=0, mode='nearest')
+
+        # Add the singleton dimension back to the result
+        input = np.expand_dims(input, axis=0)
+
+        # Convert NumPy array to PyTorch tensor
+        input = torch.tensor(input)
+
+        return input
