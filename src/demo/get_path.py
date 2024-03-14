@@ -1,4 +1,5 @@
 import argparse
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -12,6 +13,19 @@ sys.path.insert(0, project_path)
 import torch
 from utils import bw_map_data_generator as map_gen
 from utils import inference as inf
+
+def generate_map_with_path(results, file_path):
+    data_cf =  torch.cat(
+        [results['map_design'], results['outputs_cf'].paths, results['outputs_cf'].histories - results['outputs_cf'].paths], dim=1
+    )
+    np_data_cf = data_cf.numpy()
+    image_data = np_data_cf.transpose(0, 2, 3, 1)
+    scaled_image_data = (image_data * 255).astype(np.uint8)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    map_data_dir = os.path.join(script_dir, '..', '..', 'map_data')
+    os.makedirs(map_data_dir, exist_ok=True)
+    output_image_path = os.path.join(map_data_dir, 'output.png')
+    cv2.imwrite(output_image_path, scaled_image_data[0])
 
 # input params
 def parse_args():
@@ -50,53 +64,8 @@ def main(args):
         target_size_y = args.target_size_y
     )
     results = inf.infer_path()
-
-    fig, ax = plt.subplots(1, 6, figsize=(15, 7))
-
-    ax[0].imshow(
-        inf.transform_plan(torch.moveaxis(torch.cat(
-            [results['map_design'], results['outputs_vanilla'].paths, results['outputs_vanilla'].histories - results['outputs_vanilla'].paths], dim=1)[0], 0, 2)
-                        ))
-    ax[0].set_xticks([])
-    ax[0].set_yticks([])
-    ax[0].set_title(f'A* search')
-
-    ax[1].imshow(
-        inf.transform_plan(torch.moveaxis(torch.cat(
-            [results['map_design'], results['outputs_w2'].paths, results['outputs_w2'].histories - results['outputs_w2'].paths], dim=1)[0], 0, 2)
-                        ))
-    ax[1].set_xticks([])
-    ax[1].set_yticks([])
-    ax[1].set_title(f'WA* search')
-
-    ax[2].imshow(
-        inf.transform_plan(torch.moveaxis(torch.cat(
-            [results['map_design'], results['outputs_fw100'].paths, results['outputs_fw100'].histories - results['outputs_fw100'].paths], dim=1)[0], 0, 2)
-                        ))
-    ax[2].set_xticks([])
-    ax[2].set_yticks([])
-    ax[2].set_title(f'Focal search + PPM')
-
-    ax[3].imshow(
-        inf.transform_plan(torch.moveaxis(torch.cat(
-            [results['map_design'], results['outputs_cf'].paths, results['outputs_cf'].histories - results['outputs_cf'].paths], dim=1)[0], 0, 2)
-                        ))
-    ax[3].set_xticks([])
-    ax[3].set_yticks([])
-    ax[3].set_title(f'WA* search + CF')
-
-    ax[4].imshow(results['pred_f'][0, 0], cmap='gray')
-    ax[4].set_xticks([])
-    ax[4].set_yticks([])
-    ax[4].set_title(f'predicted path')
-
-    ax[5].imshow(results['pred_cf'][0, 0])
-    ax[5].set_xticks([])
-    ax[5].set_yticks([])
-    ax[5].set_title(f'predicted CF')
-
-    plt.tight_layout()
-    plt.show()
+    generate_map_with_path(results = results, file_path = 'wa_star_cf_image.png')
+    
 
 if __name__ == "__main__":
     args = parse_args()
