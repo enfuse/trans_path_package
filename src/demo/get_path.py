@@ -1,25 +1,26 @@
 import argparse
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import os
-from PIL import Image
+
+# TODO: figure out why this is necessary
 import sys
 src_demo_path = sys.path[0]
 src_path = src_demo_path[:-5]
 project_path = src_path[:-3]
 sys.path.insert(0, src_path)
 sys.path.insert(0, project_path)
+
 import torch
 from utils import bw_map_data_generator as map_gen
 from utils import inference as inf
 
 def generate_map_with_path(results, file_name):
-    data_cf =  torch.cat(
+    data =  torch.cat(
         [results['map_design'], results['outputs'].paths, results['outputs'].histories - results['outputs'].paths], dim=1
     )
-    np_data_cf = data_cf.numpy()
-    image_data = np_data_cf.transpose(0, 2, 3, 1)
+    np_data = data.numpy()
+    image_data = np_data.transpose(0, 2, 3, 1)
     scaled_image_data = (image_data * 255).astype(np.uint8)
     script_dir = os.path.dirname(os.path.abspath(__file__))
     map_data_dir = os.path.join(script_dir, '..', '..', 'map_data')
@@ -27,9 +28,7 @@ def generate_map_with_path(results, file_name):
     output_image_path = os.path.join(map_data_dir, file_name)
     cv2.imwrite(output_image_path, scaled_image_data[0])
 
-# input params
 def parse_args():
-    #  Args to generate scaled map and start and end maps
     parser = argparse.ArgumentParser(description = "Path Planning Visualization Script")
     parser.add_argument("--image_path", type = str, help = "Path to unscaled map image")
     parser.add_argument("--target_size_x", type = int, default = 64, help = "Dictates size x(width) of image")
