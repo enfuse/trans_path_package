@@ -21,7 +21,7 @@ from modules.planners import DifferentiableDiagAstar
 
 def load_image_tensor(file_path):
     image = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
-    tensor = torch.tensor(image, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
+    tensor = torch.tensor(image, dtype = torch.float32).unsqueeze(0).unsqueeze(0)
     tensor[tensor == 255] = 1
     return tensor
 
@@ -34,6 +34,7 @@ def transform_plan(image):
 
 def infer_path(
     pathfinding_method = 'cf', 
+    resolution = (64, 64),
     goal_path = 'goal_map.png', 
     map_path = 'rescaled_map.png', 
     start_path = 'start_map.png', 
@@ -57,19 +58,19 @@ def infer_path(
 
     if pathfinding_method == 'f':
         planner = DifferentiableDiagAstar(mode =' f')
-        model_focal = Autoencoder(mode='f', resolution=(64, 64))
+        model_focal = Autoencoder(mode='f', resolution = resolution)
         model_focal.load_state_dict(weights)
         model_focal.eval()
         model = model_focal
     elif pathfinding_method == 'fw100':
         planner = DifferentiableDiagAstar(mode = 'f', f_w = 100)
-        model_focal = Autoencoder(mode='f', resolution=(64, 64))
+        model_focal = Autoencoder(mode='f', resolution = resolution)
         model_focal.load_state_dict(weights)
         model_focal.eval()
         model = model_focal
     elif pathfinding_method == 'cf':
         planner = DifferentiableDiagAstar(mode = 'k')
-        model_cf = Autoencoder(mode = 'k', resolution = (64, 64))
+        model_cf = Autoencoder(mode = 'k', resolution = resolution)
         model_cf.load_state_dict(weights)
         model_cf.eval()
         model = model_cf
