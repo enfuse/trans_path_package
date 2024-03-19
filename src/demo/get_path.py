@@ -16,11 +16,21 @@ import torch
 from utils import bw_map_data_generator as map_gen
 from utils import inference as inf
 
-def generate_map_with_path(results, file_name):
+def generate_map_with_path(start_point, goal_point, results, file_name):
+    start_x, start_y = start_point
+    goal_x, goal_y = goal_point
     data =  torch.cat([results['map_design'], results['outputs'].paths, results['outputs'].histories - results['outputs'].paths], dim=1)
     np_data = data.numpy()
     image_data = np_data.transpose(0, 2, 3, 1)
     scaled_image_data = (image_data * 255).astype(np.uint8)
+    start_dot_color = [128, 0, 128]
+    goal_dot_color = [128, 0, 128]
+    scaled_image_data[0][start_y][start_x][0] = start_dot_color[0]
+    scaled_image_data[0][start_y][start_x][1] = start_dot_color[1]
+    scaled_image_data[0][start_y][start_x][2] = start_dot_color[2]
+    scaled_image_data[0][goal_y][goal_x][0] = goal_dot_color[0]
+    scaled_image_data[0][goal_y][goal_x][1] = goal_dot_color[1]
+    scaled_image_data[0][goal_y][goal_x][2] = goal_dot_color[2]
     script_dir = os.path.dirname(os.path.abspath(__file__))
     map_data_dir = os.path.join(script_dir, '..', '..', 'map_data')
     os.makedirs(map_data_dir, exist_ok = True)
@@ -63,8 +73,17 @@ def main(args):
         target_size_x = args.target_size_x, 
         target_size_y = args.target_size_y
     )
-    results = inf.infer_path(resolution = (args.target_size_x, args.target_size_y), pathfinding_method = args.pathfinding_method, weights_path = 'focal.pth')
-    generate_map_with_path(results = results, file_name = str(args.pathfinding_output_filename + '.png'))
+    results = inf.infer_path(
+        resolution = (args.target_size_x, args.target_size_y), 
+        pathfinding_method = args.pathfinding_method, 
+        weights_path = 'focal.pth'
+    )
+    generate_map_with_path(
+        start_point = (args.start_point_x, args.start_point_y), 
+        goal_point = (args.goal_point_x, args.goal_point_y), 
+        results = results, 
+        file_name = str(args.pathfinding_output_filename + '.png')
+    )
 
 if __name__ == "__main__":
     args = parse_args()
