@@ -43,12 +43,12 @@ def infer_path(
     goal_filepath = os.path.join(CURRENT_DIR, '..', '..', 'map_data', goal_path)
     map_filepath = os.path.join(CURRENT_DIR, '..', '..', 'map_data', map_path)
     start_filepath = os.path.join(CURRENT_DIR, '..', '..', 'map_data', start_path)
-    weights_filepath = os.path.join(CURRENT_DIR, '..', 'weights', weights_path)
+    weights_filepath = os.path.join(CURRENT_DIR, '..', 'weights256', weights_path)
 
     goal = load_image_tensor(goal_filepath)
     map_design = load_image_tensor(map_filepath)
     start = load_image_tensor(start_filepath)
-    weights = torch.load(weights_filepath)
+    weights = torch.load(weights_filepath, map_location = torch.device('cpu'))
 
     inputs_g = torch.cat([map_design, goal], dim=1)
     inputs_sg = torch.cat([map_design, start + goal], dim=1)

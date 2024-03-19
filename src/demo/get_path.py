@@ -1,5 +1,6 @@
 import argparse
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 
@@ -62,7 +63,7 @@ def main(args):
         target_size_x = args.target_size_x, 
         target_size_y = args.target_size_y
     )
-    results = inf.infer_path(resolution = (args.target_size_x, args.target_size_y), pathfinding_method = args.pathfinding_method)
+    results = inf.infer_path(resolution = (args.target_size_x, args.target_size_y), pathfinding_method = args.pathfinding_method, weights_path = 'focal.pth')
     generate_map_with_path(results = results, file_name = str(args.pathfinding_output_filename + '.png'))
 
 if __name__ == "__main__":
