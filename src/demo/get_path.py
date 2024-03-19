@@ -23,8 +23,8 @@ def generate_map_with_path(start_point, goal_point, results, file_name):
     np_data = data.numpy()
     image_data = np_data.transpose(0, 2, 3, 1)
     scaled_image_data = (image_data * 255).astype(np.uint8)
-    start_dot_color = [128, 0, 128]
-    goal_dot_color = [128, 0, 128]
+    start_dot_color = [191, 64, 191]
+    goal_dot_color = [255, 140, 0]
     scaled_image_data[0][start_y][start_x][0] = start_dot_color[0]
     scaled_image_data[0][start_y][start_x][1] = start_dot_color[1]
     scaled_image_data[0][start_y][start_x][2] = start_dot_color[2]
