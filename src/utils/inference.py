@@ -48,6 +48,8 @@ def infer_path(
     goal = load_image_tensor(goal_filepath)
     map_design = load_image_tensor(map_filepath)
     start = load_image_tensor(start_filepath)
+
+    # TODO: dynamically use CPU/GPU
     weights = torch.load(weights_filepath, map_location = torch.device('cpu'))
 
     inputs_g = torch.cat([map_design, goal], dim=1)
