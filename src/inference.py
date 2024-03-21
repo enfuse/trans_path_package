@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import cv2
 import matplotlib.pyplot as plt
@@ -98,14 +99,13 @@ def transform_plan(image):
     return result
 
 def infer_path(
-        pathfinding_method = 'cf',
+        pathfinding_method = 'f',
         model_resolution = (64, 64),
-        img_resolution = (256, 256),
-        goal_path = 'example/goal.png',
-        map_path = 'example/map.png',
-        start_path = 'example/start.png',
-        weights_path = 'weights/cf.pth',
-        save_image = True
+        img_resolution = (512, 512),
+        goal_path = 'example/mw/goal.png',
+        map_path = 'example/mw/map.png',
+        start_path = 'example/mw/start.png',
+        weights_path = 'weights/focal.pth'
 ):
 
     goal = load_image_tensor(goal_path, resolution=img_resolution)
@@ -114,6 +114,8 @@ def infer_path(
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     weights = torch.load(weights_path, map_location = device)
+
+    weights = weights['state_dict'] if Path(weights_path).suffix == '.ckpt' else weights
 
     model = None
     inputs = None
@@ -171,14 +173,6 @@ def infer_path(
             goal,
             (map_design == 0) * 1.
         )
-
-    if save_image:
-        img = transform_plan(torch.moveaxis(torch.cat(
-            [map_design, outputs.paths, outputs.histories - outputs.paths], dim=1)[0], 0, 2)
-                             )
-
-        plt.imshow(img)
-        plt.show()
 
     return {
         'map_design': map_design,
