@@ -1,18 +1,14 @@
 import argparse
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import os
-
-# TODO: figure out why this is necessary
 import sys
-src_demo_path = sys.path[0]
-src_path = src_demo_path[:-5]
-project_path = src_path[:-3]
-sys.path.insert(0, src_path)
-sys.path.insert(0, project_path)
-
 import torch
+
+CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
+src_dir = os.path.join(CURRENT_DIR, '..', '..', 'src')
+sys.path.append(src_dir)
+
 from utils import bw_map_data_generator as map_gen
 from utils import inference as inf
 
@@ -74,9 +70,13 @@ def main(args):
         target_size_y = args.target_size_y
     )
     results = inf.infer_path(
-        resolution = (args.target_size_x, args.target_size_y), 
-        pathfinding_method = args.pathfinding_method, 
-        weights_path = 'focal.pth'
+        pathfinding_method = args.pathfinding_method,
+        model_resolution = (64, 64),
+        img_resolution = (args.target_size_x, args.target_size_y),
+        goal_path = 'map_data/goal_map.png',
+        map_path = 'map_data/rescaled_map.png',
+        start_path = 'map_data/start_map.png',
+        weights_path = 'src/weights/focal.pth'
     )
     generate_map_with_path(
         start_point = (args.start_point_x, args.start_point_y), 
