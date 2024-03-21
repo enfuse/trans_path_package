@@ -43,12 +43,14 @@ def main(mode, run_name, proj_name, batch_size, max_epochs, img_size, ckpt_path=
 
     model = Autoencoder(mode=mode, resolution=resolution)
 
-    ckpt_path = Path(ckpt_path)
     if ckpt_path:
-        ckpt = torch.load(ckpt_path)['state_dict'] if ckpt_path.suffix == '.ckpt' else torch.load(ckpt_path)
-        ckpt_resolution = (ckpt['encoder.layers.0.weight'].shape[0], ckpt['encoder.layers.0.weight'].shape[0])
+        print('Loading Checkpoint')
+
+        ckpt_path = Path(ckpt_path)
+        ckpt = torch.load(ckpt_path)
+        ckpt_resolution = ckpt['hyper_parameters']['resolution']
         ckpt_model = Autoencoder(mode=mode, resolution=ckpt_resolution)
-        ckpt_model.load_state_dict(ckpt)
+        ckpt_model.load_state_dict(ckpt['state_dict'])
 
         model.encoder.load_state_dict(ckpt_model.encoder.state_dict())
         model.decoder.load_state_dict(ckpt_model.decoder.state_dict())
