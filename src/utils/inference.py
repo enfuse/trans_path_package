@@ -1,19 +1,23 @@
-import os
-from pathlib import Path
 
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
-import pytorch_lightning as pl
-import torch
+import os
+from pathlib import Path
 from PIL import Image
+import pytorch_lightning as pl
+import sys
+import torch
+
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
+pl.seed_everything(42)
+src_dir = os.path.join(CURRENT_DIR, '..', '..', 'src')
+map_dir = os.path.join(CURRENT_DIR, '..', '..', 'map_data')
+sys.path.append(src_dir)
+sys.path.append(map_dir)
 
 from models.autoencoder import Autoencoder
 from modules.planners import DifferentiableDiagAstar
-
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-pl.seed_everything(42)
-
 
 def resize_image(image, resolution):
     img = Image.fromarray(image)
@@ -30,65 +34,13 @@ def resize_image(image, resolution):
     img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
     padded_img = Image.new("L", resolution, color="black")
     padded_img.paste(img, ((resolution[0] - new_width) // 2, (resolution[1] - new_height) // 2))
-
-    # Threshold the image
     padded_img = padded_img.point(lambda x: 1 if x > 0 else 0)
-
     return np.asarray(padded_img)
-
-
-# def resize_image(image, resolution):
-#     # Calculate aspect ratio of the original image
-#     original_height, original_width = image.shape[:2]
-#     aspect_ratio = original_width / original_height
-#
-#     # Calculate new dimensions while maintaining aspect ratio
-#     target_width, target_height = resolution
-#     if target_width / aspect_ratio <= target_height:
-#         new_width = target_width
-#         new_height = int(new_width / aspect_ratio)
-#     else:
-#         new_height = target_height
-#         new_width = int(new_height * aspect_ratio)
-#
-#     # Resize the image using the calculated dimensions
-#     resized_image = cv2.resize(image, (new_width, new_height))
-#
-#     # Calculate the coordinates to paste the resized image in the center of the canvas
-#     start_x = (target_width - new_width) // 2
-#     start_y = (target_height - new_height) // 2
-#
-#     # Create a canvas with the target size and fill with zeros (black)
-#     canvas = np.zeros((target_height, target_width), dtype=np.uint8)
-#
-#     # Paste the resized image onto the canvas
-#     canvas[start_y:start_y + new_height, start_x:start_x + new_width] = resized_image
-#
-#     # Check if the white pixel is present in the resized image
-#     if np.max(canvas) == 0:
-#         # If the white pixel is lost, find the position of the white pixel in the original image
-#         white_pixel_position = np.argwhere(image == 255)[0]
-#
-#         # Calculate the corresponding position in the resized image
-#         new_white_pixel_position = ((white_pixel_position *
-#                                      np.array([new_width / original_width, new_height / original_height]))
-#                                     .astype(int)
-#                                     )
-#
-#         # Set the corresponding pixel in the resized canvas to white
-#         canvas[new_white_pixel_position[0], new_white_pixel_position[1]] = 255
-#
-#     canvas[canvas > 0] = 1
-#
-#     return canvas
 
 def load_image_tensor(file_path, resolution):
     image = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
-
     image = resize_image(image, resolution)
-
     tensor = torch.tensor(image, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
-
     return tensor
 
 def transform_plan(image):
@@ -99,22 +51,20 @@ def transform_plan(image):
     return result
 
 def infer_path(
-        pathfinding_method = 'f',
-        model_resolution = (64, 64),
-        img_resolution = (512, 512),
-        goal_path = 'example/mw/goal.png',
-        map_path = 'example/mw/map.png',
-        start_path = 'example/mw/start.png',
-        weights_path = 'weights/focal.pth'
+    pathfinding_method = 'f',
+    model_resolution = (64, 64),
+    img_resolution = (512, 512),
+    goal_path = 'example/mw/goal.png',
+    map_path = 'example/mw/map.png',
+    start_path = 'example/mw/start.png',
+    weights_path = 'weights/focal.pth'
 ):
-
-    goal = load_image_tensor(goal_path, resolution=img_resolution)
-    map_design = load_image_tensor(map_path, resolution=img_resolution)
-    start = load_image_tensor(start_path, resolution=img_resolution)
+    goal = load_image_tensor(goal_path, resolution = img_resolution)
+    map_design = load_image_tensor(map_path, resolution = img_resolution)
+    start = load_image_tensor(start_path, resolution = img_resolution)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     weights = torch.load(weights_path, map_location = device)
-
     weights = weights['state_dict'] if Path(weights_path).suffix == '.ckpt' else weights
 
     model = None
@@ -122,34 +72,27 @@ def infer_path(
 
     if pathfinding_method in ['f', 'fw100']:
         inputs = torch.cat([map_design, start + goal], dim=1)
-
         model = Autoencoder(mode='f', resolution = model_resolution)
         model.load_state_dict(weights)
 
         _resolution = (img_resolution[0] // 2**3, img_resolution[1] // 2**3) # 3 is hardcoded downsample steps
         model.pos.change_resolution(_resolution, 1.)
         model.decoder_pos.change_resolution(_resolution, 1.)
-
         model.eval()
 
         if pathfinding_method == 'fw100':
             planner = DifferentiableDiagAstar(mode='f', f_w=100)
-
         else:
             planner = DifferentiableDiagAstar(mode=' f')
 
     elif pathfinding_method == 'cf':
         inputs = torch.cat([map_design, goal], dim=1)
-
         planner = DifferentiableDiagAstar(mode = 'k')
-
         model = Autoencoder(mode = 'k', resolution = model_resolution)
         model.load_state_dict(weights)
-
         _resolution = (img_resolution[0] // 2**3, img_resolution[1] // 2**3) # 3 is hardcoded downsample steps
         model.pos.change_resolution(_resolution, 1.)
         model.decoder_pos.change_resolution(_resolution, 1.)
-
         model.eval()
 
     elif pathfinding_method == 'w2':
@@ -160,13 +103,12 @@ def infer_path(
 
     else:
         raise ValueError("Invalid pathfinding_method value. Choose from 'f', 'fw100', 'cf', 'w2', 'vanilla'.")
-
+    
     with torch.no_grad():
         if model:
             pred = (model(inputs) + 1) / 2
         else:
             pred = (map_design == 0) * 1.
-
         outputs = planner(
             pred,
             start,
