@@ -6,3 +6,15 @@ einops
 matplotlib
 wandb
 tqdm
+setup
+opencv-python
+pillow
+argparse
+pathlib
+requests
+urllib
+zipfile
+dotenv
+scipy
+xml
+typing

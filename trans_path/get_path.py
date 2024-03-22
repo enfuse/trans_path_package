@@ -10,7 +10,7 @@ src_dir = os.path.join(CURRENT_DIR, '..', '..', 'src')
 sys.path.append(src_dir)
 
 from utils import bw_map_data_generator as map_gen
-from utils import inference as inf
+from trans_path import inference as inf
 
 def generate_map_with_path(start_point, goal_point, results, file_name):
     start_x, start_y = start_point
