@@ -8,7 +8,7 @@ AUTHOR = 'Enfuse.io'
 EMAIL = 'jd@enfuse.io'
 URL = 'https://github.com/enfuse/trans_path_package'
 LICENSE = 'MIT'
-PYTHON_VERSION = '>=3.11.8'
+PYTHON_VERSION = '>=3.11.0'
 
 # Long description from README.md
 with open('README.md', 'r', encoding='utf-8') as f:
