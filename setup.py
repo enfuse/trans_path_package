@@ -1,18 +1,18 @@
 from setuptools import setup, find_packages
 
 # Package metadata
-NAME = 'my_project'
+NAME = 'trans_path_enfuse'
 VERSION = '1.0.0'
-DESCRIPTION = 'Description of your project'
-AUTHOR = 'Your Name'
-EMAIL = 'your@email.com'
-URL = 'https://github.com/yourusername/my_project'
+DESCRIPTION = 'Enfuse implementation of TransPath model from AIRI'
+AUTHOR = 'Enfuse.io'
+EMAIL = 'jd@enfuse.io'
+URL = 'https://github.com/enfuse/trans_path_package'
 LICENSE = 'MIT'
-PYTHON_VERSION = '>=3.6'
+PYTHON_VERSION = '>=3.11.8'
 
 # Long description from README.md
 with open('README.md', 'r', encoding='utf-8') as f:
-    long_description = f.read()
+    long_description = 'you do not need the whole README here'
 
 # Required packages
 with open('requirements.txt', 'r') as f:
@@ -34,7 +34,7 @@ setup(
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
-        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.11',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
