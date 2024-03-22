@@ -2,7 +2,7 @@ Basic pathfinding script execution:
 
 ```
 python trans_path/get_path.py \
-    --image_path 0311_map.png \
+    --image_path images/0311_map.png \
     --target_size_x 256 \
     --target_size_y 256 \
     --start_point_x 115 \

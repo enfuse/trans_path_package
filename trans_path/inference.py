@@ -1,20 +1,14 @@
-
 import cv2
 import numpy as np
 import os
+CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 from pathlib import Path
 from PIL import Image
 import pytorch_lightning as pl
-import sys
 import torch
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 pl.seed_everything(42)
-src_dir = os.path.join(CURRENT_DIR, '..', '..', 'src')
-map_dir = os.path.join(CURRENT_DIR, '..', '..', 'map_data')
-sys.path.append(src_dir)
-sys.path.append(map_dir)
 
 from models.autoencoder import Autoencoder
 from modules.planners import DifferentiableDiagAstar
@@ -32,15 +26,15 @@ def resize_image(image, resolution):
         new_width = round(new_height * aspect_ratio)
 
     img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-    padded_img = Image.new("L", resolution, color="black")
+    padded_img = Image.new("L", resolution, color = "black")
     padded_img.paste(img, ((resolution[0] - new_width) // 2, (resolution[1] - new_height) // 2))
     padded_img = padded_img.point(lambda x: 1 if x > 0 else 0)
     return np.asarray(padded_img)
 
 def load_image_tensor(file_path, resolution):
-    image = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
-    image = resize_image(image, resolution)
-    tensor = torch.tensor(image, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
+    image = cv2.imread(os.path.join(CURRENT_DIR, file_path), cv2.IMREAD_GRAYSCALE)
+    resized = resize_image(image, resolution)
+    tensor = torch.tensor(resized, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
     return tensor
 
 def transform_plan(image):
@@ -57,14 +51,14 @@ def infer_path(
     goal_path = 'example/mw/goal.png',
     map_path = 'example/mw/map.png',
     start_path = 'example/mw/start.png',
-    weights_path = 'weights/focal.pth'
+    weights_path = 'models/weights/focal.pth'
 ):
     goal = load_image_tensor(goal_path, resolution = img_resolution)
     map_design = load_image_tensor(map_path, resolution = img_resolution)
     start = load_image_tensor(start_path, resolution = img_resolution)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    weights = torch.load(weights_path, map_location = device)
+    weights = torch.load(os.path.join(CURRENT_DIR, weights_path), map_location = device)
     weights = weights['state_dict'] if Path(weights_path).suffix == '.ckpt' else weights
 
     model = None

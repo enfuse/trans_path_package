@@ -6,11 +6,11 @@ import sys
 import torch
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-src_dir = os.path.join(CURRENT_DIR, '..', '..', 'src')
-sys.path.append(src_dir)
+trans_path_dir = os.path.join(CURRENT_DIR, '..', 'trans_path')
+sys.path.append(trans_path_dir)
 
 from utils import bw_map_data_generator as map_gen
-from trans_path import inference as inf
+import inference as inf
 
 def generate_map_with_path(start_point, goal_point, results, file_name):
     start_x, start_y = start_point
@@ -27,8 +27,7 @@ def generate_map_with_path(start_point, goal_point, results, file_name):
     scaled_image_data[0][goal_y][goal_x][0] = goal_dot_color[0]
     scaled_image_data[0][goal_y][goal_x][1] = goal_dot_color[1]
     scaled_image_data[0][goal_y][goal_x][2] = goal_dot_color[2]
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    map_data_dir = os.path.join(script_dir, '..', '..', 'map_data')
+    map_data_dir = os.path.join(CURRENT_DIR, 'map_data')
     os.makedirs(map_data_dir, exist_ok = True)
     output_image_path = os.path.join(map_data_dir, file_name)
     cv2.imwrite(output_image_path, scaled_image_data[0])
@@ -76,7 +75,7 @@ def main(args):
         goal_path = 'map_data/goal_map.png',
         map_path = 'map_data/rescaled_map.png',
         start_path = 'map_data/start_map.png',
-        weights_path = 'src/weights/focal.pth'
+        weights_path = 'models/weights/focal.pth'
     )
     generate_map_with_path(
         start_point = (args.start_point_x, args.start_point_y), 

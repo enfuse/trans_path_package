@@ -141,4 +141,4 @@ dmypy.json
 *.vscode/*
 TransPath_data
 wandb
-map_data/*
+*/map_data/*
