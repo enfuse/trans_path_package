@@ -6,11 +6,11 @@ import sys
 import torch
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-trans_path_dir = os.path.join(CURRENT_DIR, '..', 'trans_path')
-sys.path.append(trans_path_dir)
+TRANS_PATH_DIR = os.path.join(CURRENT_DIR, '..')
+sys.path.insert(0, TRANS_PATH_DIR)
 
-from utils import bw_map_data_generator as map_gen
-import inference as inf
+from trans_path.utils import bw_map_data_generator as map_gen
+import trans_path.inference as inf
 
 def generate_map_with_path(start_point, goal_point, results, file_name):
     start_x, start_y = start_point

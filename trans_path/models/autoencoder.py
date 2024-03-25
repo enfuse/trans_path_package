@@ -3,11 +3,10 @@ import wandb
 from torch import nn
 import pytorch_lightning as pl
 
-from modules.encoder import Encoder
-from modules.decoder import Decoder
-from modules.attention import SpatialTransformer
-from modules.pos_emb import PosEmbeds
-
+from trans_path.modules.encoder import Encoder
+from trans_path.modules.decoder import Decoder
+from trans_path.modules.attention import SpatialTransformer
+from trans_path.modules.pos_emb import PosEmbeds
 
 def base_loss(criterion, na_outputs, va_outputs):
     return criterion(na_outputs.histories, va_outputs.paths)

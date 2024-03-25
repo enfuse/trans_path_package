@@ -1,17 +1,20 @@
 import cv2
 import numpy as np
 import os
-CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 from pathlib import Path
 from PIL import Image
 import pytorch_lightning as pl
+import sys
 import torch
 
+CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 pl.seed_everything(42)
+TRANS_PATH_DIR = os.path.join(CURRENT_DIR, '..')
+sys.path.insert(0, TRANS_PATH_DIR)
 
-from models.autoencoder import Autoencoder
-from modules.planners import DifferentiableDiagAstar
+from trans_path.models.autoencoder import Autoencoder
+from trans_path.modules.planners import DifferentiableDiagAstar
 
 def resize_image(image, resolution):
     img = Image.fromarray(image)

@@ -1,15 +1,22 @@
 import argparse
 import os
-
 import pytorch_lightning as pl
 import torch
+import sys
 import wandb
 from dotenv import load_dotenv
 from pytorch_lightning.loggers import WandbLogger
 from torch.utils.data import DataLoader
 from pathlib import Path
-from data.hmaps import GridData
-from models.autoencoder import Autoencoder, PathLogger
+
+CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+pl.seed_everything(42)
+TRANS_PATH_DIR = os.path.join(CURRENT_DIR, '..')
+sys.insert(0, TRANS_PATH_DIR)
+
+from trans_path.data.hmaps import GridData
+from trans_path.models.autoencoder import Autoencoder, PathLogger
 
 load_dotenv()
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"

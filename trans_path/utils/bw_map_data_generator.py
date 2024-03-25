@@ -15,10 +15,12 @@ def resize_and_pad(image_path, target_size_x, target_size_y):
         new_width = round(target_size_y * aspect_ratio)
         new_height = target_size_y
 
-    rescaled_img_path = os.path.join(CURRENT_DIR, '..', 'map_data', 'rescaled_map.png')
+    output_path = os.path.join(CURRENT_DIR, '..', 'map_data')
+    os.makedirs(output_path, exist_ok = True)
+    rescaled_img_path = os.path.join(output_path, 'rescaled_map.png')
     target_size = (target_size_x, target_size_y)
     img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-    padded_img = Image.new("L", target_size, color="black")
+    padded_img = Image.new("L", target_size, color = "black")
     padded_img.paste(img, ((target_size_x - new_width) // 2, (target_size_y - new_height) // 2))
     padded_img = padded_img.point(lambda x: 0 if x < 5 else 255)
     padded_img.save(rescaled_img_path, 'PNG')
@@ -26,6 +28,7 @@ def resize_and_pad(image_path, target_size_x, target_size_y):
 
 def create_start_or_goal_image(x_point, y_point, filename, target_size_x, target_size_y):
     output_path = os.path.join(CURRENT_DIR, '..', 'map_data')
+    os.makedirs(output_path, exist_ok = True)
     image = Image.new('L', (target_size_x, target_size_y), 'black')
     pixels = image.load()
     pixels[x_point, y_point] = 255
