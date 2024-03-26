@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 # Package metadata
 NAME = 'trans_path_enfuse'
-VERSION = '1.0.4'
+VERSION = '1.0.5'
 DESCRIPTION = 'Enfuse implementation of TransPath model from AIRI'
 AUTHOR = 'Enfuse.io'
 EMAIL = 'jd@enfuse.io'
@@ -35,10 +35,9 @@ setup(
     },
     install_requires = required_packages,
     classifiers = [
-        'Development Status :: 5 - Production/Stable',
+        'Development Status :: 4 - Production/Beta',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3.11',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
+        'Operating System :: OS Independent'
     ],
 )
