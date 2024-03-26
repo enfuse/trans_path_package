@@ -4,7 +4,7 @@ CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 def resize_and_pad(image_path, target_size_x, target_size_y, dev_mode = False):
     full_path: str
-    if dev:
+    if dev_mode:
         full_path = os.path.join(CURRENT_DIR, '..', image_path)
     else:
         full_path = os.path.join(os.getcwd(), image_path)
@@ -21,7 +21,7 @@ def resize_and_pad(image_path, target_size_x, target_size_y, dev_mode = False):
         new_height = target_size_y
 
     output_path: str
-    if dev:
+    if dev_mode:
         output_path = os.path.join(CURRENT_DIR, '..', 'map_data')
         os.makedirs(output_path, exist_ok = True)
     else:
@@ -38,7 +38,7 @@ def resize_and_pad(image_path, target_size_x, target_size_y, dev_mode = False):
 
 def create_start_or_goal_image(x_point, y_point, filename, target_size_x, target_size_y, dev_mode = False):
     output_path: str
-    if dev:
+    if dev_mode:
         output_path = os.path.join(CURRENT_DIR, '..', 'map_data')
         os.makedirs(output_path, exist_ok = True)
     else:
