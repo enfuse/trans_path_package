@@ -12,3 +12,9 @@ python trans_path/get_path.py \
     --pathfinding_method fw100 \
     --pathfinding_output_filename focal_w100_output_256
 ```
+
+Install via pip:
+
+```
+pip install git+https://github.com/enfuse/trans_path_package.git
+```
