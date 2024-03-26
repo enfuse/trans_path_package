@@ -52,21 +52,24 @@ def main(args):
     map_gen.resize_and_pad(
         image_path = args.image_path, 
         target_size_x = args.target_size_x, 
-        target_size_y = args.target_size_y
+        target_size_y = args.target_size_y,
+        dev_mode = True
     )
     map_gen.create_start_or_goal_image(
         x_point = args.start_point_x, 
         y_point = args.start_point_y, 
         filename = start_filename, 
         target_size_x = args.target_size_x, 
-        target_size_y = args.target_size_y
+        target_size_y = args.target_size_y,
+        dev_mode = True
     )
     map_gen.create_start_or_goal_image(
         x_point = args.goal_point_x, 
         y_point = args.goal_point_y, 
         filename = goal_filename, 
         target_size_x = args.target_size_x, 
-        target_size_y = args.target_size_y
+        target_size_y = args.target_size_y,
+        dev_mode = True
     )
     results = inf.infer_path(
         pathfinding_method = args.pathfinding_method,

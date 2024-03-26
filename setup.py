@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 # Package metadata
 NAME = 'trans_path_enfuse'
-VERSION = '1.0.1'
+VERSION = '1.0.2'
 DESCRIPTION = 'Enfuse implementation of TransPath model from AIRI'
 AUTHOR = 'Enfuse.io'
 EMAIL = 'jd@enfuse.io'

@@ -68,8 +68,8 @@ def infer_path(
     inputs = None
 
     if pathfinding_method in ['f', 'fw100']:
-        inputs = torch.cat([map_design, start + goal], dim=1)
-        model = Autoencoder(mode='f', resolution = model_resolution)
+        inputs = torch.cat([map_design, start + goal], dim = 1)
+        model = Autoencoder(mode = 'f', resolution = model_resolution)
         model.load_state_dict(weights)
 
         _resolution = (img_resolution[0] // 2**3, img_resolution[1] // 2**3) # 3 is hardcoded downsample steps
@@ -87,6 +87,7 @@ def infer_path(
         planner = DifferentiableDiagAstar(mode = 'k')
         model = Autoencoder(mode = 'k', resolution = model_resolution)
         model.load_state_dict(weights)
+
         _resolution = (img_resolution[0] // 2**3, img_resolution[1] // 2**3) # 3 is hardcoded downsample steps
         model.pos.change_resolution(_resolution, 1.)
         model.decoder_pos.change_resolution(_resolution, 1.)
@@ -106,6 +107,7 @@ def infer_path(
             pred = (model(inputs) + 1) / 2
         else:
             pred = (map_design == 0) * 1.
+            
         outputs = planner(
             pred,
             start,

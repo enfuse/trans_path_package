@@ -2,9 +2,14 @@ import os
 from PIL import Image
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
 
-def resize_and_pad(image_path, target_size_x, target_size_y):
-    image_path = os.path.join(CURRENT_DIR, '..', image_path)
-    img = Image.open(image_path)
+def resize_and_pad(image_path, target_size_x, target_size_y, dev_mode = False):
+    full_path: str
+    if dev:
+        full_path = os.path.join(CURRENT_DIR, '..', image_path)
+    else:
+        full_path = os.path.join(os.getcwd(), image_path)
+
+    img = Image.open(full_path)
     original_width, original_height = img.size
     aspect_ratio = original_width / original_height
 
@@ -15,8 +20,13 @@ def resize_and_pad(image_path, target_size_x, target_size_y):
         new_width = round(target_size_y * aspect_ratio)
         new_height = target_size_y
 
-    output_path = os.path.join(CURRENT_DIR, '..', 'map_data')
-    os.makedirs(output_path, exist_ok = True)
+    output_path: str
+    if dev:
+        output_path = os.path.join(CURRENT_DIR, '..', 'map_data')
+        os.makedirs(output_path, exist_ok = True)
+    else:
+        output_path = os.path.join(os.getcwd(), 'map_data')
+
     rescaled_img_path = os.path.join(output_path, 'rescaled_map.png')
     target_size = (target_size_x, target_size_y)
     img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
@@ -26,9 +36,14 @@ def resize_and_pad(image_path, target_size_x, target_size_y):
     padded_img.save(rescaled_img_path, 'PNG')
     print("map_gen -> resize_and_pad: complete")
 
-def create_start_or_goal_image(x_point, y_point, filename, target_size_x, target_size_y):
-    output_path = os.path.join(CURRENT_DIR, '..', 'map_data')
-    os.makedirs(output_path, exist_ok = True)
+def create_start_or_goal_image(x_point, y_point, filename, target_size_x, target_size_y, dev_mode = False):
+    output_path: str
+    if dev:
+        output_path = os.path.join(CURRENT_DIR, '..', 'map_data')
+        os.makedirs(output_path, exist_ok = True)
+    else:
+        output_path = os.path.join(os.getcwd(), 'map_data')
+
     image = Image.new('L', (target_size_x, target_size_y), 'black')
     pixels = image.load()
     pixels[x_point, y_point] = 255
