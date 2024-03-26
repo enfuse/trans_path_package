@@ -34,10 +34,14 @@ def resize_image(image, resolution):
     padded_img = padded_img.point(lambda x: 1 if x > 0 else 0)
     return np.asarray(padded_img)
 
-def load_image_tensor(file_path, resolution):
-    image = cv2.imread(os.path.join(CURRENT_DIR, file_path), cv2.IMREAD_GRAYSCALE)
+def load_image_tensor(file_path, resolution, dev_mode = False):
+    image: any
+    if (dev_mode):
+        image = cv2.imread(os.path.join(CURRENT_DIR, file_path), cv2.IMREAD_GRAYSCALE)
+    else:
+        image = cv2.imread(os.path.join(os.getcwd(), file_path), cv2.IMREAD_GRAYSCALE)
     resized = resize_image(image, resolution)
-    tensor = torch.tensor(resized, dtype=torch.float32).unsqueeze(0).unsqueeze(0)
+    tensor = torch.tensor(resized, dtype = torch.float32).unsqueeze(0).unsqueeze(0)
     return tensor
 
 def transform_plan(image):
@@ -54,11 +58,12 @@ def infer_path(
     goal_path = 'example/mw/goal.png',
     map_path = 'example/mw/map.png',
     start_path = 'example/mw/start.png',
-    weights_path = 'models/weights/focal.pth'
+    weights_path = 'models/weights/focal.pth',
+    dev_mode = False
 ):
-    goal = load_image_tensor(goal_path, resolution = img_resolution)
-    map_design = load_image_tensor(map_path, resolution = img_resolution)
-    start = load_image_tensor(start_path, resolution = img_resolution)
+    goal = load_image_tensor(goal_path, resolution = img_resolution, dev_mode = dev_mode)
+    map_design = load_image_tensor(map_path, resolution = img_resolution, dev_mode = dev_mode)
+    start = load_image_tensor(start_path, resolution = img_resolution, dev_mode = dev_mode)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     weights = torch.load(os.path.join(CURRENT_DIR, weights_path), map_location = device)

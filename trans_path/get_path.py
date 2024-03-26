@@ -78,7 +78,8 @@ def main(args):
         goal_path = 'map_data/goal_map.png',
         map_path = 'map_data/rescaled_map.png',
         start_path = 'map_data/start_map.png',
-        weights_path = 'models/weights/focal.pth'
+        weights_path = 'models/weights/focal.pth',
+        dev_mode = True
     )
     generate_map_with_path(
         start_point = (args.start_point_x, args.start_point_y), 
