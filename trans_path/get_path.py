@@ -12,7 +12,7 @@ sys.path.insert(0, TRANS_PATH_DIR)
 from trans_path.utils import bw_map_data_generator as map_gen
 import trans_path.inference as inf
 
-def generate_map_with_path(start_point, goal_point, results, file_name):
+def generate_map_with_path(start_point, goal_point, results, file_name, dev_mode = False):
     start_x, start_y = start_point
     goal_x, goal_y = goal_point
     data =  torch.cat([results['map_design'], results['outputs'].paths, results['outputs'].histories - results['outputs'].paths], dim=1)
@@ -27,9 +27,17 @@ def generate_map_with_path(start_point, goal_point, results, file_name):
     scaled_image_data[0][goal_y][goal_x][0] = goal_dot_color[0]
     scaled_image_data[0][goal_y][goal_x][1] = goal_dot_color[1]
     scaled_image_data[0][goal_y][goal_x][2] = goal_dot_color[2]
-    map_data_dir = os.path.join(CURRENT_DIR, 'map_data')
-    os.makedirs(map_data_dir, exist_ok = True)
-    output_image_path = os.path.join(map_data_dir, file_name)
+
+    map_data_dir: str
+    output_image_path: str
+    if (dev_mode):
+        map_data_dir = os.path.join(CURRENT_DIR, 'map_data')
+        os.makedirs(map_data_dir, exist_ok = True)
+        output_image_path = os.path.join(map_data_dir, file_name)
+    else:
+        map_data_dir = os.path.join(os.getcwd(), 'map_data')
+        output_image_path = os.path.join(map_data_dir, file_name)
+    
     cv2.imwrite(output_image_path, scaled_image_data[0])
 
 def parse_args():
