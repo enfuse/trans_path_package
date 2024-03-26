@@ -29,9 +29,9 @@ setup(
     url = URL,
     license = LICENSE,
     python_requires = PYTHON_VERSION,
-    packages = find_packages(include = 'trans_path_enfuse'),
+    packages = find_packages(include = 'trans_path'),
     package_data = {
-        'trans_path_enfuse': ['trans_path/models/weights/*']
+        'trans_path': ['trans_path/models/weights/*']
     },
     install_requires = required_packages,
     classifiers = [
