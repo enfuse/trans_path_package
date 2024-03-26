@@ -29,7 +29,7 @@ setup(
     url = URL,
     license = LICENSE,
     python_requires = PYTHON_VERSION,
-    packages = find_packages(include = 'trans_path'),
+    packages = find_packages(),
     package_data = {
         'trans_path': ['trans_path/models/weights/*']
     },
